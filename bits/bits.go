@@ -33,13 +33,13 @@ func ExtractNextBit(byteArray []byte, bitIndex uint32) (byte, error) {
 	return bit, nil
 }
 
-func Encode(bitMap map[string][]byte, bitCount map[string]uint32, s string) BitVector {
+func Encode(bitMap map[rune][]byte, bitCount map[rune]uint32, s string) BitVector {
 	var bitVector BitVector
 	bitVector.Vector = make([]byte, 0)
 
-	for i := 0; i < len(s); i++ {
-		for j := uint32(0); j < bitCount[string(s[i])]; j++ {
-			bit, err := ExtractNextBit(bitMap[string(s[i])], j)
+	for _, char := range s {
+		for i := uint32(0); i < bitCount[char]; i++ {
+			bit, err := ExtractNextBit(bitMap[char], i)
 			if err != nil {
 				continue
 			}
@@ -62,15 +62,15 @@ func ExtreactBits(byteArray []byte, bitCount uint32, index int) []byte {
 	return result.Vector
 }
 
-func Decode(bitMap map[string][]byte, bitCount map[string]uint32, bitVector []byte, count uint32) string {
-	var result string
+func Decode(bitMap map[rune][]byte, bitCount map[rune]uint32, bitVector []byte, count uint32) string {
+	var result []rune
 	index := 0
 	for i := uint32(0); i < count; i++ {
 		for key, value := range bitMap {
 			x := true
 			buffer := ExtreactBits(bitVector, bitCount[key], index)
 			if CompareBits(buffer, value) {
-				result += key
+				result = append(result, key)
 				index += int(bitCount[key])
 				x = false
 			}
@@ -79,7 +79,7 @@ func Decode(bitMap map[string][]byte, bitCount map[string]uint32, bitVector []by
 			}
 		}
 	}
-	return result
+	return string(result)
 }
 
 func CompareBits(byteArray1 []byte, byteArray2 []byte) bool {

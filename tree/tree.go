@@ -68,7 +68,7 @@ func (h *HuffmanTree) inserthead() {
 }
 
 type primaryNode struct {
-	name              string
+	name              rune
 	frequency         int
 	bitRepresentation b.BitVector
 }
@@ -104,18 +104,18 @@ func (n *linkNode) Frequency() int {
 	return n.value
 }
 
-func (n *primaryNode) Name() string {
+func (n *primaryNode) Name() rune {
 	return n.name
 }
 
-func (n *linkNode) Name() string {
-	return "link"
+func (n *linkNode) Name() rune {
+	return rune(0)
 }
 
 type Node interface {
 	nodeType() string
 	Frequency() int
-	Name() string
+	Name() rune
 	setVector(b.BitVector)
 }
 
@@ -132,7 +132,7 @@ func BuildTree(slice []hashmap.KV) *HuffmanTree {
 	return tree
 }
 
-func traverse(node Node, table map[string][]byte, count map[string]uint32) {
+func traverse(node Node, table map[rune][]byte, count map[rune]uint32) {
 	if node.nodeType() == "primary" {
 		table[node.(*primaryNode).name] = node.(*primaryNode).bitRepresentation.Vector
         count[node.(*primaryNode).name] = node.(*primaryNode).bitRepresentation.SignificantBits
@@ -156,12 +156,12 @@ func traverse(node Node, table map[string][]byte, count map[string]uint32) {
     }
 }
 
-func (h *HuffmanTree) BuildTable(table map[string][]byte, count map[string]uint32) (map[string][]byte, map[string]uint32) {
+func (h *HuffmanTree) BuildTable(table map[rune][]byte, count map[rune]uint32) (map[rune][]byte, map[rune]uint32) {
 	if table == nil {
-		table = make(map[string][]byte)
+		table = make(map[rune][]byte)
 	}
     if count == nil {
-        count = make(map[string]uint32)
+        count = make(map[rune]uint32)
     }
 	traverse(h.currentNode, table, count)
 	return table, count
